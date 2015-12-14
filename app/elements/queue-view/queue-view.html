@@ -9,6 +9,17 @@
         margin-bottom: 1em;
       }
     </style>
+           <h1 id="roomName">[[roomName]]</h1>
+    <template is="dom-bind">
+
+       <template is="dom-repeat" items="[[roomData]]" as="roomData">
+         <paper-button class="roomButton" raised id="[[roomData.__firebaseKey__]]">
+           [[roomData.titles]]
+         </paper-button>
+
+       </template>
+     </template>
+
     <google-youtube id="googleYouTube"
                     playsupported="{{playSupported}}"
                     video-id="tA8AfQaUnXM"
@@ -39,10 +50,11 @@
       <button id="cue-video" on-click="handleCueVideo">Cue</button>
     </div>
 
+
+
     <div>
-      <label for="searchFor">Search</label>
-      <input id="searchFor" value="">
-      <button id="search-for" on-click="searchVideo">Search</button>
+      <paper-input style="display:inline-block" type="search" id="searchFor" value=""></paper-input>
+      <paper-button raised id="search-for" on-click="searchVideo">Search</paper-button>
       <div class="horizontal-section-container">
         <template is="dom-bind" id="ytApp">
           <iron-ajax auto
@@ -59,6 +71,13 @@
                                 height="300px"
                                 thumbnail="[[item.snippet.thumbnails.high.url]]">
                 </google-youtube>
+                <!--<h2><a href="[[url(item.id.videoId)]]" target="_blank">[[item.snippet.title]]</a></h2>
+                <iron-image src="[[item.snippet.thumbnails.default.url]]" width="256" height="256" sizing="cover" preload fade></iron-image>
+                <p>[[item.snippet.description]]</p>
+                -->
+              </div>
+            </template>
+
                 <!--<h2><a href="[[url(item.id.videoId)]]" target="_blank">[[item.snippet.title]]</a></h2>
                 <iron-image src="[[item.snippet.thumbnails.default.url]]" width="256" height="256" sizing="cover" preload fade></iron-image>
                 <p>[[item.snippet.description]]</p>
@@ -86,19 +105,44 @@
       durationFormatted: String,
       fractionLoaded: Number,
       searchParams: Object,
-      queue: Object,
+      queueList: Object,
+      roomData: Object,
+      roomName: {
+         type: String,
+         value:'Go Join A Room!',
+         notify: true
+       },
+      currentRoom: {
+        type: String,
+        value: 'Go Join A Room!',
+        observer: 'roomChanged'
+      },
       events: {
         type: Array,
         value: []
       }
     },
+    attached: function(){
+
+    },
+    roomChanged: function(newV, oldV){
+        if(this.currentRoom!='Go Join A Room!'){
+
+        var dataRef = new Firebase('https://youtubeq.firebaseio.com/roomList/'+this.currentRoom);
+        dataRef.on('value',  function(snapshot){
+          console.log("Room Title: " + snapshot.val().roomTitle);
+          this.roomName = snapshot.val().roomTitle;
+          this.queueList = snapshot.val().queueList;
+          snapshot.forEach(function(childSnapshot){
+            console.log("RoomData: " + childSnapshot.key());
+          });
+         });
+       }
+     },
+
     created: function(){
-      var dataRef = new Firebase('https://youtubeq.firebaseio.com/queueList');
-      dataRef.on('value',  function(snapshot){
-        snapshot.forEach(function(childSnapshot){
-          console.log(childSnapshot.val());
-        });
-       });
+
+     //}
     //  var app = document.querySelector('#ytApp');
       console.log("Queue-View Has been Created!");
   //    app.url = function (videoId) {

@@ -14,7 +14,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   // and give it some initial binding values
   // Learn more about auto-binding templates at http://goo.gl/Dx1u2g
   var app = document.querySelector('#app');
-
+  var currentRoom = "";
   app.displayInstalledToast = function() {
     // Check to make sure caching is actually enabled—it won't be in the dev environment.
     if (!document.querySelector('platinum-sw-cache').disabled) {

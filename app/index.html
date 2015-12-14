@@ -127,7 +127,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <section data-route="home">
               <paper-material elevation="1">
 
-                <queue-view></queue-view>
+                <queue-view current-room="{{currentRoom}}"></queue-view>
 
               </paper-material>
               <paper-material elevation="1">
@@ -140,7 +140,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <section data-route="rooms">
               <paper-material elevation="1">
                 <h2 class="page-title">Join a Room</h2>
-                <room-list></room-list>
+                <room-list current-room="{{currentRoom}}" ></room-list>
               </paper-material>
             </section>
 

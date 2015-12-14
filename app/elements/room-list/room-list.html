@@ -1,13 +1,14 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <dom-module id="room-list">
+  <template>
 
 <template is="dom-bind">
    <firebase-collection
      location="https://youtubeq.firebaseio.com/roomList"
      data="{{roomsIds}}"></firebase-collection>
    <template is="dom-repeat" items="[[roomsIds]]" as="roomsIds">
-     <paper-button class="roomButton" raised id="[[roomsIds.__firebaseKey__]]">
+     <paper-button href="/home" class="roomButton" raised id="[[roomsIds.__firebaseKey__]]" on-click="joinRoom">
        [[roomsIds.roomTitle]]
      </paper-button>
 
@@ -24,12 +25,13 @@
     display: block;
     background-color: var(--dark-primary-color);
     color: var(--light-primary-color) !important;
-
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
   }
   </style>
+</template>
   <script>
-    (function () {
-      'use strict';
 
       Polymer({
         is: 'room-list',
@@ -37,13 +39,29 @@
           items: {
             type: Array,
             notify: true,
-          }
+          },
+          currentRoom: {
+            type:String,
+            notify:true,
+            value:'Go Join A Room!'
+          },
         },
-        ready: function() {
+        listeners:{
+          click: 'joinRoom'
+        },
+        attached: function(){
 
+        },
+        created: function() {
+            console.log("Ready RoomsList");
+
+        },
+        joinRoom: function(ev){
+            console.log(ev.srcElement.id);
+            this.currentRoom = ev.srcElement.id;
         }
       });
-    })();
+
   </script>
 
 </dom-module>

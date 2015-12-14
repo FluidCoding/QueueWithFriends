@@ -1,6 +1,8 @@
-Live Demo: http://fluidcoding.com/sonnie/QWF
+Live Demo: http://fluidcoding.com/sonnie/QWF/#!home
 
-Run locally with
+Clone Run locally with
+
+bower install
 
 gulp serve
 

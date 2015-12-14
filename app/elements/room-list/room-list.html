@@ -1,0 +1,49 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<dom-module id="room-list">
+
+<template is="dom-bind">
+   <firebase-collection
+     location="https://youtubeq.firebaseio.com/roomList"
+     data="{{roomsIds}}"></firebase-collection>
+   <template is="dom-repeat" items="[[roomsIds]]" as="roomsIds">
+     <paper-button class="roomButton" raised id="[[roomsIds.__firebaseKey__]]">
+       [[roomsIds.roomTitle]]
+     </paper-button>
+
+   </template>
+ </template>
+ <style is="custom-style">
+  paper-button.roomButton {
+    --paper-button-ink-color: var(--dark-primary-color);
+    margin-top: 40px !important;
+    padding-top: 25px !important;
+    padding-bottom: 25px !important;
+    font-weight: bold !important;
+    align-self: center !important;
+    display: block;
+    background-color: var(--dark-primary-color);
+    color: var(--light-primary-color) !important;
+
+  }
+  </style>
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+        is: 'room-list',
+        properties: {
+          items: {
+            type: Array,
+            notify: true,
+          }
+        },
+        ready: function() {
+
+        }
+      });
+    })();
+  </script>
+
+</dom-module>

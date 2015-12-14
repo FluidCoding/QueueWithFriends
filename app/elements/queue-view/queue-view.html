@@ -11,7 +11,7 @@
     </style>
     <google-youtube id="googleYouTube"
                     playsupported="{{playSupported}}"
-                    video-id="mN7IAaRdi_k"
+                    video-id="tA8AfQaUnXM"
                     state="{{state}}"
                     currenttime="{{currentTime}}"
                     currenttimeformatted="{{currentTimeFormatted}}"
@@ -21,10 +21,6 @@
                     on-google-youtube-state-change="handleStateChange"
                     on-google-youtube-error="handleYouTubeError">
     </google-youtube>
-
-    <div>
-      <p>Playback Progress: <span>{{currentTimeFormatted}}</span> / <span>{{durationFormatted}}</span> <progress max="1" value="{{computeProgress(currentTime, duration)}}"></progress></p>
-    </div>
 
     <div>
       <button id="play-video"
@@ -39,7 +35,7 @@
 
     <div>
       <label for="videoId">Video ID:</label>
-      <input id="videoId" value="M7lc1UVf-VE">
+      <input id="videoId" value="tA8AfQaUnXM">
       <button id="cue-video" on-click="handleCueVideo">Cue</button>
     </div>
 
@@ -52,7 +48,7 @@
           <iron-ajax auto
               id="YTQuery"
               url="https://www.googleapis.com/youtube/v3/search"
-              params='{"part":"snippet", "q":"", "key": "AIzaSyDwozRpbCqV5G7GjCI0T1QB7QES27rjHWY", "type": "video"}'
+              params='{{searchParams}}'
               handle-as="json"
               last-response="{{ajaxResponse}}"></iron-ajax>
 
@@ -89,17 +85,28 @@
       duration: Number,
       durationFormatted: String,
       fractionLoaded: Number,
+      searchParams: Object,
+      queue: Object,
       events: {
         type: Array,
         value: []
       }
     },
     created: function(){
+      var dataRef = new Firebase('https://youtubeq.firebaseio.com/queueList');
+      dataRef.on('value',  function(snapshot){
+        snapshot.forEach(function(childSnapshot){
+          console.log(childSnapshot.val());
+        });
+       });
     //  var app = document.querySelector('#ytApp');
       console.log("Queue-View Has been Created!");
   //    app.url = function (videoId) {
   //      return 'https://www.youtube.com/watch?v=' + videoId;
   //    }
+    },
+    updateQueue: function(snap){
+          console.log(snap);
     },
     computeProgress: function(currentTime, duration) {
       return currentTime / duration;
@@ -125,10 +132,10 @@
     handleCueVideo: function(ev) {
       this.$.googleYouTube.videoId = this.$.videoId.value;
     },
-    searchVideo: function(ev) {
-      console.log('searching' + this.$.searchFor.value);
-//      this.$.YTQuery.params='{"part":"snippet", "q":' + this.$.searchFor.value +  ', "key": "AIzaSyDwozRpbCqV5G7GjCI0T1QB7QES27rjHWY", "type": "video"}';
-      this.$.ajax.generateRequest();
+    searchVideo: function() {
+      console.log('searching ' + this.$.searchFor.value);
+      YTQuery.params={"part":"snippet", "q": this.$.searchFor.value, "key": "AIzaSyDwozRpbCqV5G7GjCI0T1QB7QES27rjHWY", "type": "video"};
+//      YTQuery.generateRequest();
 //      this.$.googleYouTube.videoId =
     },
     loadToPlayer: function(id){
@@ -137,7 +144,32 @@
     }
   });
 
+  function initDraggable(){
+  	drake = dragula([document.getElementById('YTresults'), document.getElementById('queue')],
+  			{
+  				accepts: function(el, target, source, sibling){
+  					if(source.id == "queue" && target.id == "YTresults"){
+  						return false;
+  					}
+  					if(source.id == target.id)
+  						return true;
+  					console.log(source.id);
+  					console.log(target.id);
+  /*					else if(source.id == "queue" && target.id == "queue")
+  						return true;
+  						*/
+  					return true;
+  				},
+  				moves: function(el, container, handle){
+  					//queue.pushChange(container);
+  					return true;
+  				}
+  			}
+  	   ).on('drop', function (el) {
+//  	   		queue.pushChange();
+         });
 
+  }
 
 
 

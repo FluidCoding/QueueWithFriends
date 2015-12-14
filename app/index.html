@@ -46,6 +46,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="stylesheet" href="styles/main.css">
   <!-- endbuild-->
 
+  <!-- Custom Libraries Firebase+Dragula -->
+  <script src="https://cdn.firebase.com/js/client/2.3.2/firebase.js"></script>
   <!-- build:js bower_components/webcomponentsjs/webcomponents-lite.min.js -->
   <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
   <!-- endbuild -->
@@ -60,6 +62,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </head>
 
 <body unresolved class="fullbleed layout vertical">
+  <!-- Dragula in the body for slight perf gain -->
+  <script src="scripts/dragula.min.js"></script>
+  <link href='styles/dragula.min.css' rel='stylesheet' type='text/css' />
+
   <span id="browser-sync-binding"></span>
   <template is="dom-bind" id="app">
 
@@ -79,9 +85,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <span>Home</span>
           </a>
 
-          <a data-route="users" href="/users" on-click="onDataRouteClick">
+          <a data-route="rooms" href="/rooms" on-click="onDataRouteClick">
             <iron-icon icon="info"></iron-icon>
-            <span>Users</span>
+            <span>Rooms</span>
           </a>
 
           <a data-route="contact" href="/contact" on-click="onDataRouteClick">
@@ -131,11 +137,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             </section>
 
-            <section data-route="users">
+            <section data-route="rooms">
               <paper-material elevation="1">
-                <h2 class="page-title">Users</h2>
-                <p>This is the users section</p>
-                <a href="/users/Rob">Rob</a>
+                <h2 class="page-title">Join a Room</h2>
+                <room-list></room-list>
               </paper-material>
             </section>
 

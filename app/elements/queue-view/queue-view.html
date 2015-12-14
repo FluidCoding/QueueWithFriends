@@ -1,0 +1,144 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../../bower_components/google-youtube.html">
+
+
+<dom-module id="queue-view">
+  <template>
+    <style>
+      div {
+        margin-bottom: 1em;
+      }
+    </style>
+    <google-youtube id="googleYouTube"
+                    playsupported="{{playSupported}}"
+                    video-id="mN7IAaRdi_k"
+                    state="{{state}}"
+                    currenttime="{{currentTime}}"
+                    currenttimeformatted="{{currentTimeFormatted}}"
+                    duration="{{duration}}"
+                    durationformatted="{{durationFormatted}}"
+                    fractionloaded="{{fractionLoaded}}"
+                    on-google-youtube-state-change="handleStateChange"
+                    on-google-youtube-error="handleYouTubeError">
+    </google-youtube>
+
+    <div>
+      <p>Playback Progress: <span>{{currentTimeFormatted}}</span> / <span>{{durationFormatted}}</span> <progress max="1" value="{{computeProgress(currentTime, duration)}}"></progress></p>
+    </div>
+
+    <div>
+      <button id="play-video"
+        disabled="{{computePlayDisabled(state, playSupported)}}"
+        on-click="handlePlayVideo"
+      >Play</button>
+      <button id="pause-video"
+        disabled="{{computePauseDisabled(state)}}"
+        on-click="handlePauseVideo"
+      >Pause</button>
+    </div>
+
+    <div>
+      <label for="videoId">Video ID:</label>
+      <input id="videoId" value="M7lc1UVf-VE">
+      <button id="cue-video" on-click="handleCueVideo">Cue</button>
+    </div>
+
+    <div>
+      <label for="searchFor">Search</label>
+      <input id="searchFor" value="">
+      <button id="search-for" on-click="searchVideo">Search</button>
+      <div class="horizontal-section-container">
+        <template is="dom-bind" id="ytApp">
+          <iron-ajax auto
+              id="YTQuery"
+              url="https://www.googleapis.com/youtube/v3/search"
+              params='{"part":"snippet", "q":"", "key": "AIzaSyDwozRpbCqV5G7GjCI0T1QB7QES27rjHWY", "type": "video"}'
+              handle-as="json"
+              last-response="{{ajaxResponse}}"></iron-ajax>
+
+            <template is="dom-repeat" items="[[ajaxResponse.items]]">
+              <div class="horizontal-section">
+                <google-youtube video-id="[[item.id.videoId]]"
+                                width="425px"
+                                height="300px"
+                                thumbnail="[[item.snippet.thumbnails.high.url]]">
+                </google-youtube>
+                <!--<h2><a href="[[url(item.id.videoId)]]" target="_blank">[[item.snippet.title]]</a></h2>
+                <iron-image src="[[item.snippet.thumbnails.default.url]]" width="256" height="256" sizing="cover" preload fade></iron-image>
+                <p>[[item.snippet.description]]</p>
+                -->
+              </div>
+            </template>
+
+        </template>
+      </div>
+
+    </div>
+
+  </template>
+</dom-module>
+
+<script>
+  Polymer({
+    is: 'queue-view',
+    properties: {
+      playSupported: Boolean,
+      state: String,
+      currentTime: Number,
+      currentTimeFormatted: String,
+      duration: Number,
+      durationFormatted: String,
+      fractionLoaded: Number,
+      events: {
+        type: Array,
+        value: []
+      }
+    },
+    created: function(){
+    //  var app = document.querySelector('#ytApp');
+      console.log("Queue-View Has been Created!");
+  //    app.url = function (videoId) {
+  //      return 'https://www.youtube.com/watch?v=' + videoId;
+  //    }
+    },
+    computeProgress: function(currentTime, duration) {
+      return currentTime / duration;
+    },
+    computePlayDisabled: function(state, playSupported) {
+      return state == 1 || state == 3 || !playSupported;
+    },
+    computePauseDisabled: function(state) {
+      return state != 1 && state != 3;
+    },
+    handleStateChange: function(ev) {
+      this.events.push({data: ev.detail.data});
+    },
+    handleYouTubeError: function(ev) {
+      console.error('YouTube playback error', ev.detail);
+    },
+    handlePlayVideo: function(ev) {
+      this.$.googleYouTube.play();
+    },
+    handlePauseVideo: function(ev) {
+      this.$.googleYouTube.pause();
+    },
+    handleCueVideo: function(ev) {
+      this.$.googleYouTube.videoId = this.$.videoId.value;
+    },
+    searchVideo: function(ev) {
+      console.log('searching' + this.$.searchFor.value);
+//      this.$.YTQuery.params='{"part":"snippet", "q":' + this.$.searchFor.value +  ', "key": "AIzaSyDwozRpbCqV5G7GjCI0T1QB7QES27rjHWY", "type": "video"}';
+      this.$.ajax.generateRequest();
+//      this.$.googleYouTube.videoId =
+    },
+    loadToPlayer: function(id){
+        this.$.googleYouTube.videoId = id;
+        this.$.googleYouTube.play();
+    }
+  });
+
+
+
+
+
+</script>

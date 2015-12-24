@@ -9,16 +9,6 @@
         margin-bottom: 1em;
       }
     </style>
-           <h1 id="roomName">[[roomName]]</h1>
-    <template is="dom-bind">
-
-       <template is="dom-repeat" items="[[roomData]]" as="roomData">
-         <paper-button class="roomButton" raised id="[[roomData.__firebaseKey__]]">
-           [[roomData.titles]]
-         </paper-button>
-
-       </template>
-     </template>
 
     <google-youtube id="googleYouTube"
                     playsupported="{{playSupported}}"
@@ -50,12 +40,11 @@
       <button id="cue-video" on-click="handleCueVideo">Cue</button>
     </div>
 
-
-
     <div>
       <paper-input style="display:inline-block" type="search" id="searchFor" value=""></paper-input>
       <paper-button raised id="search-for" on-click="searchVideo">Search</paper-button>
       <div class="horizontal-section-container">
+      <h1 id="roomTitle">[[roomName]]</h1>
         <template is="dom-bind" id="ytApp">
           <iron-ajax auto
               id="YTQuery"
@@ -78,6 +67,8 @@
               </div>
             </template>
 
+
+
                 <!--<h2><a href="[[url(item.id.videoId)]]" target="_blank">[[item.snippet.title]]</a></h2>
                 <iron-image src="[[item.snippet.thumbnails.default.url]]" width="256" height="256" sizing="cover" preload fade></iron-image>
                 <p>[[item.snippet.description]]</p>
@@ -91,7 +82,6 @@
     </div>
 
   </template>
-</dom-module>
 
 <script>
   Polymer({
@@ -104,13 +94,14 @@
       duration: Number,
       durationFormatted: String,
       fractionLoaded: Number,
+      dataRef: Object,
       searchParams: Object,
       queueList: Object,
       roomData: Object,
       roomName: {
          type: String,
          value:'Go Join A Room!',
-         notify: true
+         reflectToAttribute: true
        },
       currentRoom: {
         type: String,
@@ -123,21 +114,20 @@
       }
     },
     attached: function(){
-
     },
-    roomChanged: function(newV, oldV){
-        if(this.currentRoom!='Go Join A Room!'){
-
-        var dataRef = new Firebase('https://youtubeq.firebaseio.com/roomList/'+this.currentRoom);
+    roomChanged: function(){
+      if(this.currentRoom!='Go Join A Room!'){
+        console.log("Ey : " + this.roomName);
+        dataRef = new Firebase('https://youtubeq.firebaseio.com/roomList/'+this.currentRoom);
         dataRef.on('value',  function(snapshot){
-          console.log("Room Title: " + snapshot.val().roomTitle);
+          roomData = snapshot.val();
           this.roomName = snapshot.val().roomTitle;
+          console.log("Room Title: " + snapshot.val().roomTitle);
+          //this.set('roomName', snapshot.val().roomTitle);
           this.queueList = snapshot.val().queueList;
-          snapshot.forEach(function(childSnapshot){
-            console.log("RoomData: " + childSnapshot.key());
-          });
          });
-       }
+         console.log(this);
+      }
      },
 
     created: function(){
@@ -218,3 +208,5 @@
 
 
 </script>
+
+</dom-module>

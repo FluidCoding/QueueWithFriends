@@ -8,13 +8,18 @@
      location="https://youtubeq.firebaseio.com/roomList"
      data="{{roomsIds}}"></firebase-collection>
    <template is="dom-repeat" items="[[roomsIds]]" as="roomsIds">
+     <a data-route="home" href="/home" on-click="onDataRouteClick">
      <paper-button href="/home" class="roomButton" raised id="[[roomsIds.__firebaseKey__]]" on-click="joinRoom">
        [[roomsIds.roomTitle]]
      </paper-button>
+   </a>
 
    </template>
  </template>
  <style is="custom-style">
+ a {
+   text-decoration: none;
+  }
   paper-button.roomButton {
     --paper-button-ink-color: var(--dark-primary-color);
     margin-top: 40px !important;

@@ -44,7 +44,14 @@
       <paper-input style="display:inline-block" type="search" id="searchFor" value=""></paper-input>
       <paper-button raised id="search-for" on-click="searchVideo">Search</paper-button>
       <div class="horizontal-section-container">
-      <h1 id="roomTitle">[[roomName]]</h1>
+
+        <template is="dom-bind">
+           <firebase-collection
+             location$="https://youtubeq.firebaseio.com/roomList/"{{currentRoom}}
+             data="{{roomData}}"></firebase-collection>
+
+         </template>
+      <h1 id="roomTitle">[[roomData.roomTitle]]</h1>
         <template is="dom-bind" id="ytApp">
           <iron-ajax auto
               id="YTQuery"
@@ -97,11 +104,15 @@
       dataRef: Object,
       searchParams: Object,
       queueList: Object,
-      roomData: Object,
+      roomData: {
+        type: Object,
+        notify: true
+      },
       roomName: {
          type: String,
          value:'Go Join A Room!',
-         reflectToAttribute: true
+         notify: true,
+         observer: 'nameChanged'
        },
       currentRoom: {
         type: String,
@@ -115,18 +126,19 @@
     },
     attached: function(){
     },
+     nameChanged: function(changed, old){
+      //this.set("roomName", this.roomName);
+      console.log(this.roomName);
+        console.log("OLD: " + old, "NEW: " + changed);
+    },
     roomChanged: function(){
       if(this.currentRoom!='Go Join A Room!'){
         console.log("Ey : " + this.roomName);
+
         dataRef = new Firebase('https://youtubeq.firebaseio.com/roomList/'+this.currentRoom);
-        dataRef.on('value',  function(snapshot){
-          roomData = snapshot.val();
-          this.roomName = snapshot.val().roomTitle;
-          console.log("Room Title: " + snapshot.val().roomTitle);
-          //this.set('roomName', snapshot.val().roomTitle);
-          this.queueList = snapshot.val().queueList;
-         });
-         console.log(this);
+
+        dataRef.on('value', this.updateQueue);
+
       }
      },
 
@@ -139,8 +151,12 @@
   //      return 'https://www.youtube.com/watch?v=' + videoId;
   //    }
     },
-    updateQueue: function(snap){
-          console.log(snap);
+    updateQueue: function(snapshot){
+      this.roomData = snapshot.val();
+      this.roomName = snapshot.val().roomTitle;
+      console.log("RoomName : " + roomName);
+      console.log("Room Title: " + roomData.roomTitle);
+      this.queueList = snapshot.val().queueList;
     },
     computeProgress: function(currentTime, duration) {
       return currentTime / duration;

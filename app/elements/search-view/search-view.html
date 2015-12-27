@@ -1,0 +1,152 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../../bower_components/google-youtube.html">
+
+
+<dom-module id="search-view">
+  <template>
+    <style>
+      div {
+        margin-bottom: 1em;
+      }
+      div .horizontal-section{
+        display:inline-block;
+      }
+    </style>
+
+    <google-youtube id="googleYouTube"
+                    playsupported="{{playSupported}}"
+                    video-id="tA8AfQaUnXM"
+                    state="{{state}}"
+                    currenttime="{{currentTime}}"
+                    currenttimeformatted="{{currentTimeFormatted}}"
+                    duration="{{duration}}"
+                    durationformatted="{{durationFormatted}}"
+                    fractionloaded="{{fractionLoaded}}"
+                    on-google-youtube-state-change="handleStateChange"
+                    on-google-youtube-error="handleYouTubeError">
+    </google-youtube>
+
+    <div>
+      <button id="play-video"
+        disabled="{{computePlayDisabled(state, playSupported)}}"
+        on-click="handlePlayVideo"
+      >Play</button>
+      <button id="pause-video"
+        disabled="{{computePauseDisabled(state)}}"
+        on-click="handlePauseVideo"
+      >Pause</button>
+    </div>
+
+    <div>
+      <label for="videoId">Video ID:</label>
+      <input id="videoId" value="tA8AfQaUnXM">
+      <button id="cue-video" on-click="handleCueVideo">Cue</button>
+    </div>
+
+    <div>
+      <paper-input style="display:inline-block" type="search" id="searchFor" value=""></paper-input>
+      <paper-button raised id="search-for" on-click="searchVideo">Search</paper-button>
+      <div class="horizontal-section-container">
+        <template is="dom-bind" id="ytApp">
+          <iron-ajax auto
+              id="YTQuery"
+              url="https://www.googleapis.com/youtube/v3/search"
+              params='{{searchParams}}'
+              handle-as="json"
+              last-response="{{ajaxResponse}}"></iron-ajax>
+
+            <template is="dom-repeat" items="[[ajaxResponse.items]]">
+              <div class="horizontal-section">
+                <google-youtube video-id="[[item.id.videoId]]"
+                                width="141px"
+                                height="100px"
+                                thumbnail="[[item.snippet.thumbnails.high.url]]">
+                </google-youtube>
+                <!--<h2><a href="[[url(item.id.videoId)]]" target="_blank">[[item.snippet.title]]</a></h2>
+                <iron-image src="[[item.snippet.thumbnails.default.url]]" width="256" height="256" sizing="cover" preload fade></iron-image>
+                <p>[[item.snippet.description]]</p>
+                -->
+              </div>
+            </template>
+                <!--<h2><a href="[[url(item.id.videoId)]]" target="_blank">[[item.snippet.title]]</a></h2>
+                <iron-image src="[[item.snippet.thumbnails.default.url]]" width="256" height="256" sizing="cover" preload fade></iron-image>
+                <p>[[item.snippet.description]]</p>
+                -->
+              </div>
+            </template>
+
+        </template>
+      </div>
+
+    </div>
+
+  </template>
+
+  </template>
+<script>
+  Polymer({
+    is: 'search-view',
+    properties: {
+      playSupported: Boolean,
+      state: String,
+      currentTime: Number,
+      currentTimeFormatted: String,
+      duration: Number,
+      durationFormatted: String,
+      fractionLoaded: Number,
+      dataRef: Object,
+      searchParams: Object,
+      events: {
+        type: Array,
+        value: []
+      }
+    },
+    attached: function(){
+      console.log("Search-View is Attached");
+    },
+    ready: function(){
+      console.log("Search-View is Ready");
+    },
+    created: function(){
+      console.log("Search-View Has been Created!");
+    },
+    computeProgress: function(currentTime, duration) {
+      return currentTime / duration;
+    },
+    computePlayDisabled: function(state, playSupported) {
+      return state == 1 || state == 3 || !playSupported;
+    },
+    computePauseDisabled: function(state) {
+      return state != 1 && state != 3;
+    },
+    handleStateChange: function(ev) {
+      this.events.push({data: ev.detail.data});
+    },
+    handleYouTubeError: function(ev) {
+      console.error('YouTube playback error', ev.detail);
+    },
+    handlePlayVideo: function(ev) {
+      this.$.googleYouTube.play();
+    },
+    handlePauseVideo: function(ev) {
+      this.$.googleYouTube.pause();
+    },
+    handleCueVideo: function(ev) {
+      this.$.googleYouTube.videoId = this.$.videoId.value;
+    },
+    searchVideo: function() {
+      console.log('searching ' + this.$.searchFor.value);
+      YTQuery.params={"part":"snippet", "q": this.$.searchFor.value, "key": "AIzaSyDwozRpbCqV5G7GjCI0T1QB7QES27rjHWY", "type": "video"};
+//      YTQuery.generateRequest();
+//      this.$.googleYouTube.videoId =
+    },
+    loadToPlayer: function(id){
+        this.$.googleYouTube.videoId = id;
+        this.$.googleYouTube.play();
+    }
+  });
+
+
+</script>
+
+</dom-module>

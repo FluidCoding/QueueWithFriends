@@ -9,87 +9,12 @@
         margin-bottom: 1em;
       }
     </style>
-
-    <google-youtube id="googleYouTube"
-                    playsupported="{{playSupported}}"
-                    video-id="tA8AfQaUnXM"
-                    state="{{state}}"
-                    currenttime="{{currentTime}}"
-                    currenttimeformatted="{{currentTimeFormatted}}"
-                    duration="{{duration}}"
-                    durationformatted="{{durationFormatted}}"
-                    fractionloaded="{{fractionLoaded}}"
-                    on-google-youtube-state-change="handleStateChange"
-                    on-google-youtube-error="handleYouTubeError">
-    </google-youtube>
-
-    <div>
-      <button id="play-video"
-        disabled="{{computePlayDisabled(state, playSupported)}}"
-        on-click="handlePlayVideo"
-      >Play</button>
-      <button id="pause-video"
-        disabled="{{computePauseDisabled(state)}}"
-        on-click="handlePauseVideo"
-      >Pause</button>
-    </div>
-
-    <div>
-      <label for="videoId">Video ID:</label>
-      <input id="videoId" value="tA8AfQaUnXM">
-      <button id="cue-video" on-click="handleCueVideo">Cue</button>
-    </div>
-
-    <div>
-      <paper-input style="display:inline-block" type="search" id="searchFor" value=""></paper-input>
-      <paper-button raised id="search-for" on-click="searchVideo">Search</paper-button>
-      <div class="horizontal-section-container">
-
-        <template is="dom-bind">
-           <firebase-collection
-             location$="https://youtubeq.firebaseio.com/roomList/"{{currentRoom}}
-             data="{{roomData}}"></firebase-collection>
-
-         </template>
-      <h1 id="roomTitle">[[roomData.roomTitle]]</h1>
-        <template is="dom-bind" id="ytApp">
-          <iron-ajax auto
-              id="YTQuery"
-              url="https://www.googleapis.com/youtube/v3/search"
-              params='{{searchParams}}'
-              handle-as="json"
-              last-response="{{ajaxResponse}}"></iron-ajax>
-
-            <template is="dom-repeat" items="[[ajaxResponse.items]]">
-              <div class="horizontal-section">
-                <google-youtube video-id="[[item.id.videoId]]"
-                                width="425px"
-                                height="300px"
-                                thumbnail="[[item.snippet.thumbnails.high.url]]">
-                </google-youtube>
-                <!--<h2><a href="[[url(item.id.videoId)]]" target="_blank">[[item.snippet.title]]</a></h2>
-                <iron-image src="[[item.snippet.thumbnails.default.url]]" width="256" height="256" sizing="cover" preload fade></iron-image>
-                <p>[[item.snippet.description]]</p>
-                -->
-              </div>
-            </template>
-
-
-
-                <!--<h2><a href="[[url(item.id.videoId)]]" target="_blank">[[item.snippet.title]]</a></h2>
-                <iron-image src="[[item.snippet.thumbnails.default.url]]" width="256" height="256" sizing="cover" preload fade></iron-image>
-                <p>[[item.snippet.description]]</p>
-                -->
-              </div>
-            </template>
-
-        </template>
-      </div>
-
-    </div>
-
+    <array-selector id="selector" items="{{roomData.queueList.titles}}" selected="{{titles}}" multi toggle></array-selector>
+    <template is="dom-repeat" items="{{roomData.queueList.titles}}">
+        <span id="queueVidTitle">{{item}}</span>
+    </template>
+    <h1>{{roomName}}</h1>
   </template>
-
 <script>
   Polymer({
     is: 'queue-view',
@@ -114,6 +39,11 @@
          notify: true,
          observer: 'nameChanged'
        },
+      titleList:{
+        type: Array,
+        value: [],
+        notify: true
+      },
       currentRoom: {
         type: String,
         value: 'Go Join A Room!',
@@ -125,6 +55,8 @@
       }
     },
     attached: function(){
+    },
+    ready: function(){
     },
      nameChanged: function(changed, old){
       //this.set("roomName", this.roomName);
@@ -142,6 +74,7 @@
       }
      },
 
+
     created: function(){
 
      //}
@@ -152,11 +85,12 @@
   //    }
     },
     updateQueue: function(snapshot){
+      console.log("Ey : " + this.roomName);
       this.roomData = snapshot.val();
       this.roomName = snapshot.val().roomTitle;
       console.log("RoomName : " + roomName);
       console.log("Room Title: " + roomData.roomTitle);
-      this.queueList = snapshot.val().queueList;
+      console.log("Queue Titles: " + this.roomData.queueList.titles);
     },
     computeProgress: function(currentTime, duration) {
       return currentTime / duration;
@@ -182,45 +116,11 @@
     handleCueVideo: function(ev) {
       this.$.googleYouTube.videoId = this.$.videoId.value;
     },
-    searchVideo: function() {
-      console.log('searching ' + this.$.searchFor.value);
-      YTQuery.params={"part":"snippet", "q": this.$.searchFor.value, "key": "AIzaSyDwozRpbCqV5G7GjCI0T1QB7QES27rjHWY", "type": "video"};
-//      YTQuery.generateRequest();
-//      this.$.googleYouTube.videoId =
-    },
     loadToPlayer: function(id){
         this.$.googleYouTube.videoId = id;
         this.$.googleYouTube.play();
     }
   });
-
-  function initDraggable(){
-  	drake = dragula([document.getElementById('YTresults'), document.getElementById('queue')],
-  			{
-  				accepts: function(el, target, source, sibling){
-  					if(source.id == "queue" && target.id == "YTresults"){
-  						return false;
-  					}
-  					if(source.id == target.id)
-  						return true;
-  					console.log(source.id);
-  					console.log(target.id);
-  /*					else if(source.id == "queue" && target.id == "queue")
-  						return true;
-  						*/
-  					return true;
-  				},
-  				moves: function(el, container, handle){
-  					//queue.pushChange(container);
-  					return true;
-  				}
-  			}
-  	   ).on('drop', function (el) {
-//  	   		queue.pushChange();
-         });
-
-  }
-
 
 
 </script>

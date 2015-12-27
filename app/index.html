@@ -126,14 +126,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             <section data-route="home">
               <paper-material elevation="1">
-
-                <queue-view current-room="{{currentRoom}}"></queue-view>
-
-              </paper-material>
-              <paper-material elevation="1">
                 <p class="paper-font-body2">Welcome Please Login.</p>
               </paper-material>
 
+              <paper-material elevation="1">
+                <queue-view current-room="{{currentRoom}}"></queue-view>
+              </paper-material>
+
+              <paper-material elevation="1">
+                <search-view></search-view>
+              </paper-material>
 
             </section>
 
@@ -156,8 +158,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <section data-route="contact">
               <paper-material elevation="1">
                 <h2 class="page-title">Contact</h2>
-                <p>This is the contact section</p>
-                <paper-input for="email"></paper
+                <p>Email Me: </p>
+                <paper-input for="email"></paper-input>
+                <paper-button>Submit</paper-button>
               </paper-material>
             </section>
 

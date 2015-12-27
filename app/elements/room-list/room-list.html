@@ -5,7 +5,7 @@
 
 <template is="dom-bind">
    <firebase-collection
-     location="https://youtubeq.firebaseio.com/roomList"
+     location="https://youtubeq.firebaseio.com/roomList/"
      data="{{roomsIds}}"></firebase-collection>
    <template is="dom-repeat" items="[[roomsIds]]" as="roomsIds">
      <a data-route="home" href="/home" on-click="onDataRouteClick">

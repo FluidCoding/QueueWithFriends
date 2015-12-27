@@ -9,11 +9,24 @@
         margin-bottom: 1em;
       }
     </style>
-    <array-selector id="selector" items="{{roomData.queueList.titles}}" selected="{{titles}}" multi toggle></array-selector>
-    <template is="dom-repeat" items="{{roomData.queueList.titles}}">
-        <span id="queueVidTitle">{{item}}</span>
-    </template>
-    <h1>{{roomName}}</h1>
+    <span>{{roomName}}</span>
+    <template is="dom-bind">
+       <firebase-collection id="fbCollection"
+
+         data="{{thumbUrls}}"></firebase-collection>
+       <template is="dom-repeat" items="[[thumbUrls]]" as="thumbUrls">
+         <img class="queueElm" src=[[thumbUrls.value]] raised id="[[index]]" on-click="joinRoom">
+       </img>
+       </template>
+     </template>
+     <style is="custom-style">
+     a {
+       text-decoration: none;
+      }
+      img.queueElm {
+        display: inline-block !important;
+      }
+      </style>
   </template>
 <script>
   Polymer({
@@ -65,11 +78,12 @@
     },
     roomChanged: function(){
       if(this.currentRoom!='Go Join A Room!'){
+        this.roomName = "";
         console.log("Ey : " + this.roomName);
+        fbCollection.location="https://youtubeq.firebaseio.com/roomList/" + this.currentRoom + "/queueList/thumbUrls";
+//        dataRef = new Firebase('https://youtubeq.firebaseio.com/roomList/'+this.currentRoom);
 
-        dataRef = new Firebase('https://youtubeq.firebaseio.com/roomList/'+this.currentRoom);
-
-        dataRef.on('value', this.updateQueue);
+//        dataRef.on('value', this.updateQueue);
 
       }
      },

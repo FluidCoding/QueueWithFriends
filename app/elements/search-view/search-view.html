@@ -48,7 +48,7 @@
       <paper-button raised id="search-for" on-click="searchVideo">Search</paper-button>
       <div class="horizontal-section-container">
         <template is="dom-bind" id="ytApp">
-          <iron-ajax auto
+          <iron-ajax
               id="YTQuery"
               url="https://www.googleapis.com/youtube/v3/search"
               params='{{searchParams}}'
@@ -137,7 +137,7 @@
     searchVideo: function() {
       console.log('searching ' + this.$.searchFor.value);
       YTQuery.params={"part":"snippet", "q": this.$.searchFor.value, "key": "AIzaSyDwozRpbCqV5G7GjCI0T1QB7QES27rjHWY", "type": "video"};
-//      YTQuery.generateRequest();
+      YTQuery.generateRequest();
 //      this.$.googleYouTube.videoId =
     },
     loadToPlayer: function(id){

@@ -138,7 +138,6 @@
       console.log('searching ' + this.$.searchFor.value);
       YTQuery.params={"part":"snippet", "q": this.$.searchFor.value, "key": "AIzaSyDwozRpbCqV5G7GjCI0T1QB7QES27rjHWY", "type": "video"};
       YTQuery.generateRequest();
-//      this.$.googleYouTube.videoId =
     },
     loadToPlayer: function(id){
         this.$.googleYouTube.videoId = id;

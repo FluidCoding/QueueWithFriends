@@ -10,14 +10,11 @@
       }
     </style>
     <span>{{roomName}}</span>
-    <template is="dom-bind">
        <firebase-collection id="fbCollection"
-
          data="{{thumbUrls}}"></firebase-collection>
-       <template is="dom-repeat" items="[[thumbUrls]]" as="thumbUrls">
-         <img class="queueElm" src=[[thumbUrls.value]] raised id="[[index]]" on-click="joinRoom">
+       <template is="dom-repeat" items="[[thumbUrls]]" as="thumbUrls" >
+         <img class="queueElm" src=[[thumbUrls.value]] raised id="[[index]]" on-click="playSelection">
        </img>
-       </template>
      </template>
      <style is="custom-style">
      a {
@@ -62,6 +59,9 @@
         value: 'Go Join A Room!',
         observer: 'roomChanged'
       },
+      listeners: {
+        click: 'playSelection'
+      },
       events: {
         type: Array,
         value: []
@@ -105,6 +105,9 @@
       console.log("RoomName : " + roomName);
       console.log("Room Title: " + roomData.roomTitle);
       console.log("Queue Titles: " + this.roomData.queueList.titles);
+    },
+    playSelection: function(ev){
+      console.log("Fired on: " + ev.srcElement.id);
     },
     computeProgress: function(currentTime, duration) {
       return currentTime / duration;

@@ -108,6 +108,23 @@
     },
     playSelection: function(ev){
       console.log("Fired on: " + ev.srcElement.id);
+      var yT = document.querySelector('#googleYouTube');
+      var player = document.querySelector('#player');
+      var vId = ev.srcElement.src;
+      vId = vId.substr(23,11);
+      //vId.splice("vi");
+      console.log(vId);
+      if(yT!=null){// 2 = paused // -1 not started // 1 = playing
+        yT.videoId = vId;
+        yT.play();
+        /*console.log(yT.state);
+          if(yT.state == 1)
+            yT.pause();
+          else
+            yT.play();
+*/
+        console.log(ev.srcElement);
+      }
     },
     computeProgress: function(currentTime, duration) {
       return currentTime / duration;
